@@ -255,12 +255,14 @@ int test_shearing()
                 glm::vec4(1, 1, 1, 0),
                 glm::vec4(1, 1, 0, 1));
         glm::mat4x4 const B4x4 = glm::shear(A4x4, center, l_x, l_y, l_z);
+        glm::mat4x4 const C4x4 = glm::shear_slow(A4x4, center, l_x, l_y, l_z);
         glm::mat4x4 const expected(
                 glm::vec4(0, 0, 1, 1),
                 glm::vec4(2, 1, 1, 0),
                 glm::vec4(3, 1, 1, 0),
                 glm::vec4(3, 1, 0, 1));
         Error += all(equal(B4x4, expected, epsilon<float>())) ? 0 : 1;
+        Error += all(equal(C4x4, expected, epsilon<float>())) ? 0 : 1;
     }
 
     {
@@ -274,12 +276,14 @@ int test_shearing()
                 glm::vec4(1, 1, 1, 0),
                 glm::vec4(1, 0, 0, 0));
         glm::mat4x4 const B4x4 = glm::shear(A4x4, center, l_x, l_y, l_z);
+        glm::mat4x4 const C4x4 = glm::shear_slow(A4x4, center, l_x, l_y, l_z);
         glm::mat4x4 const expected(
                 glm::vec4(0, 1, 1, 0),
                 glm::vec4(1, 2, 1, 0),
                 glm::vec4(2, 2, 2, 0),
                 glm::vec4(1, 0, 1, 0));
         Error += all(equal(B4x4, expected, epsilon<float>())) ? 0 : 1;
+        Error += all(equal(C4x4, expected, epsilon<float>())) ? 0 : 1;
     }
 
     {
@@ -289,12 +293,14 @@ int test_shearing()
         glm::vec2 const l_z(4, 5);
         glm::mat4x4 const A4x4(1);
         glm::mat4x4 const B4x4 = glm::shear(A4x4, center, l_x, l_y, l_z);
+        glm::mat4x4 const C4x4 = glm::shear_slow(A4x4, center, l_x, l_y, l_z);
         glm::mat4x4 const expected(
                 glm::vec4(1, 3, 4, 0),
                 glm::vec4(1, 1, 5, 0),
                 glm::vec4(2, 1, 1, 0),
                 glm::vec4(-9, -8, -9, 1));
         Error += all(equal(B4x4, expected, epsilon<float>())) ? 0 : 1;
+        Error += all(equal(C4x4, expected, epsilon<float>())) ? 0 : 1;
     }
 
     {
@@ -308,12 +314,14 @@ int test_shearing()
                 glm::vec4(4, -8, 0, 0),
                 glm::vec4(7, 1, -2, 0));
         glm::mat4x4 const B4x4 = glm::shear(A4x4, center, l_x, l_y, l_z);
+        glm::mat4x4 const C4x4 = glm::shear_slow(A4x4, center, l_x, l_y, l_z);
         glm::mat4x4 const expected(
                 glm::vec4(1, -6, -1, 0),
                 glm::vec4(7, 12, 23, 0),
                 glm::vec4(-4, 4, -24, 0),
                 glm::vec4(4, 20, 31, 0));
         Error += all(equal(B4x4, expected, epsilon<float>())) ? 0 : 1;
+        Error += all(equal(C4x4, expected, epsilon<float>())) ? 0 : 1;
     }
 
     return Error;
@@ -367,19 +375,20 @@ int test_inverse_perf(std::size_t Count, std::size_t Instance, char const * Mess
 int main()
 {
 	int Error = 0;
+
 	Error += test_matrixCompMult();
 	Error += test_outerProduct();
 	Error += test_transpose();
 	Error += test_determinant();
 	Error += test_inverse();
-    Error += test_inverse_simd();
-    Error += test_shearing();
+	Error += test_inverse_simd();
+	Error += test_shearing();
 
-#	ifdef NDEBUG
+#ifdef NDEBUG
 	std::size_t const Samples = 1000;
-#	else
+#else
 	std::size_t const Samples = 1;
-#	endif//NDEBUG
+#endif//NDEBUG
 
 	for(std::size_t i = 0; i < 1; ++i)
 	{
